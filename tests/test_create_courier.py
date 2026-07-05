@@ -2,8 +2,9 @@ import allure
 import requests
 import pytest
 
-from Sprint_7.src.helpers import valid_courier
+from src.helpers import valid_courier, delete_courier
 from src.urls import CREATE_COURIER
+from src.messages import DUPLICATE_LOGIN, NOT_ENOUGH_DATA_TO_CREATE
 
 
 
@@ -18,7 +19,8 @@ class TestCreateCourier:
         assert response.status_code == 201
         assert response.json() == {"ok": True}
 
-        
+        delete_courier(payload)
+
 
     @allure.title("Нельзя создать двух курьеров с одинаковыми данными")
     def test_create_duplicate_courier_conflict(self):
@@ -29,7 +31,9 @@ class TestCreateCourier:
 
         second = requests.post(CREATE_COURIER, data=payload)
         assert second.status_code == 409
-        assert second.json()["message"] == "Этот логин уже используется. Попробуйте другой."
+        assert second.json()["message"] == DUPLICATE_LOGIN
+
+        delete_courier(payload)
 
 
     @allure.title("Нельзя создать курьера без обязательного поля {missing_field}")
@@ -41,7 +45,7 @@ class TestCreateCourier:
         response = requests.post(CREATE_COURIER, data=payload)
 
         assert response.status_code == 400
-        assert response.json()["message"] == "Недостаточно данных для создания учетной записи"
+        assert response.json()["message"] == NOT_ENOUGH_DATA_TO_CREATE
 
 
     @allure.title("Нельзя создать курьера с уже существующим логином")
@@ -55,5 +59,7 @@ class TestCreateCourier:
         response = requests.post(CREATE_COURIER, data=second_payload)
 
         assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
+        assert response.json()["message"] == DUPLICATE_LOGIN
+
+        delete_courier(first_payload)
 

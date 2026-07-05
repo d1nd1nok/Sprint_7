@@ -2,6 +2,7 @@ import allure
 import requests
 
 from src.urls import GET_ORDERS
+from src.messages import COURIER_NOT_FOUND
 
 
 class TestGetOrders:
@@ -21,4 +22,4 @@ class TestGetOrders:
         response = requests.get(GET_ORDERS, params={"courierId": courier_id})
 
         assert response.status_code == 404
-        assert response.json()["message"] == f"Курьер с идентификатором {courier_id} не найден"
+        assert response.json()["message"] == COURIER_NOT_FOUND.format(courier_id=courier_id)

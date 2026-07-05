@@ -2,7 +2,7 @@ import allure
 import requests
 import pytest
 
-from Sprint_7.src.helpers import order_payload
+from src.helpers import order_payload
 from src.urls import CREATE_ORDER
 
 

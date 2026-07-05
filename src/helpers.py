@@ -3,6 +3,8 @@ import requests
 import random
 import string
 
+from src.urls import LOGIN_COURIER, DELETE_COURIER, CREATE_COURIER
+
 fake = faker.Faker()
 
 
@@ -37,7 +39,7 @@ def register_new_courier_and_return_login_password():
     }
 
     # отправляем запрос на регистрацию курьера и сохраняем ответ в переменную response
-    response = requests.post('https://qa-scooter.praktikum-services.ru/api/v1/courier', data=payload)
+    response = requests.post(CREATE_COURIER, data=payload)
 
     # если регистрация прошла успешно (код ответа 201), добавляем в словарь логин и пароль курьера
     if response.status_code == 201:
@@ -46,6 +48,13 @@ def register_new_courier_and_return_login_password():
 
     # возвращаем словарь
     return login_pass
+
+
+def delete_courier(credentials):
+    response = requests.post(LOGIN_COURIER, data=credentials)
+    if response.status_code == 200:
+        courier_id = response.json()["id"]
+        requests.delete(DELETE_COURIER.format(courier_id=courier_id))
 
 
 def order_payload():
